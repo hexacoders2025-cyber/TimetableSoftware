@@ -6,9 +6,13 @@ cursor.execute("SELECT * FROM instructor")
 print(cursor.fetchall())
 # Instructor table
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS instructor(
-id INTEGER PRIMARY KEY AUTOINCREMENT,
-name TEXT
+CREATE TABLE IF NOT EXISTS instructor (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    teacher_name TEXT NOT NULL,
+    subject TEXT NOT NULL,
+    division TEXT NOT NULL,
+    timeslot TEXT NOT NULL,
+    available INTEGER NOT NULL
 )
 """)
 
