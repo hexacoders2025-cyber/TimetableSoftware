@@ -1,74 +1,118 @@
 from tkinter import *
+from tkinter import messagebox
+from main import open_main_window
 from PIL import Image, ImageTk
-import os
 
-def open_main():
-    os.system("python main.py")
-
-def login(role):
-    username = user_entry.get()
-    password = pass_entry.get()
-
-    if role == "admin" and username == "admin" and password == "123":
-        open_main()
-        root.destroy()
-    elif role == "faculty" and username == "faculty" and password == "123":
-        open_main()
-        root.destroy()
-    else:
-        status_label.config(text="Invalid Login!", fg="red")
-
-# ===== WINDOW =====
+# ===== CREATE ROOT =====
 root = Tk()
-root.title("Login")
+root.title("Admin Login")
 root.state("zoomed")
+root.configure(bg="#ebdde0")
+root.resizable(False, False)
 
-screen_width = root.winfo_screenwidth()
-screen_height = root.winfo_screenheight()
+# ===== CENTER LOGIN BOX (WITH BORDER) =====
+center = Frame(
+    root,
+    bg="#fad6dc",
+    bd=3,            # border thickness
+    relief=SOLID,    # solid border
+    padx=40,         # inner padding
+    pady=30
+)
+center.place(relx=0.5, rely=0.5, anchor=CENTER)
 
-# ===== PINK BACKGROUND =====
-bg = Image.new("RGB", (screen_width, screen_height), "#ffc0cb")
-bg_photo = ImageTk.PhotoImage(bg)
-Label(root, image=bg_photo).place(x=0, y=0, relwidth=1, relheight=1)
+# ===== VARIABLE TO STORE SELECTED DEPARTMENT =====
+selected_dept = StringVar()
+selected_dept.set("Select Department")
 
-# ===== LOGO TOP RIGHT =====
+# ===== LOGIN FUNCTION =====
+def admin_login():
+    username = user_entry.get().strip()
+    password = pass_entry.get().strip()
+    dept = selected_dept.get()
+
+    dept_passwords = {
+        "Computer": "comp123",
+        "Civil": "civil123",
+        "Mechanical": "mech123",
+        "First Year": "fy123",
+        "Information Technology": "it123",
+        "ENTC": "entc123"
+    }
+
+    if dept == "Select Department":
+        messagebox.showerror("Error", "Please select a department")
+        return
+
+    if username == "admin" and password == dept_passwords.get(dept):
+        messagebox.showinfo("Login Success", f"Welcome Admin ({dept})")
+        root.destroy()
+        open_main_window()
+    else:
+        messagebox.showerror("Login Failed", "Invalid credentials for selected department")
+
+# ===== HEADING =====
+Label(center, text="ADMIN LOGIN",
+      font=("Arial", 28, "bold"),
+      bg="#fad6dc").pack(pady=20)
+
+# ===== DEPARTMENT DROPDOWN =====
+dept_btn = Menubutton(
+    center,
+    textvariable=selected_dept,
+    font=("Arial", 14, "bold"),
+    width=24,
+    bg="#ff69b4",
+    fg="white",
+    activebackground="#ff85c1",
+    activeforeground="white",
+    bd=2,
+    relief=SOLID
+)
+dept_btn.pack(pady=10)
+
+dept_menu = Menu(dept_btn, tearoff=0, bg="#ffc0cb", fg="black")
+dept_btn.config(menu=dept_menu)
+
+dept_menu.add_command(label="Computer",
+                      command=lambda: selected_dept.set("Computer"))
+dept_menu.add_command(label="Civil",
+                      command=lambda: selected_dept.set("Civil"))
+dept_menu.add_command(label="Mechanical",
+                      command=lambda: selected_dept.set("Mechanical"))
+dept_menu.add_command(label="First Year",
+                      command=lambda: selected_dept.set("First Year"))
+dept_menu.add_command(label="Information Technology",
+                      command=lambda: selected_dept.set("Information Technology"))
+dept_menu.add_command(label="ENTC",
+                      command=lambda: selected_dept.set("ENTC"))
+
+# ===== LOGO (TOP RIGHT) =====
 logo_img = Image.open("bg.png")
-logo_img = logo_img.resize((120, 120))
+logo_img = logo_img.resize((150, 150))
 logo_photo = ImageTk.PhotoImage(logo_img)
 
-Label(root, image=logo_photo, bd=0).place(relx=1.0, y=10, anchor="ne")
+logo_label = Label(root, image=logo_photo, bd=0)
+logo_label.place(relx=1.0, y=10, anchor="ne")
 
-# ===== GLASS LOGIN BOX =====
-glass = Frame(root, bg="#ffffff", bd=0)
-glass.place(relx=0.5, rely=0.5, anchor=CENTER)
+# ===== USERNAME =====
+Label(center, text="Username", font=("Arial", 14), bg="#fad6dc").pack()
+user_entry = Entry(center, font=("Arial", 14), width=25, bd=2, relief=SOLID)
+user_entry.pack(pady=6)
 
-glass.config(highlightbackground="#ffffff", highlightthickness=1)
-glass.pack_propagate(False)
-glass.config(width=400, height=450)
+# ===== PASSWORD =====
+Label(center, text="Password", font=("Arial", 14), bg="#fad6dc").pack()
+pass_entry = Entry(center, show="*", font=("Arial", 14), width=25, bd=2, relief=SOLID)
+pass_entry.pack(pady=6)
 
-# Soft glass color
-glass_bg = "#ffffff"
-
-Label(glass, text="Login", font=("Arial", 28, "bold"),
-      bg=glass_bg, fg="#ff69b4").pack(pady=20)
-
-Label(glass, text="Username", bg=glass_bg).pack()
-user_entry = Entry(glass, width=25, font=("Arial", 12))
-user_entry.pack(pady=8)
-
-Label(glass, text="Password", bg=glass_bg).pack()
-pass_entry = Entry(glass, show="*", width=25, font=("Arial", 12))
-pass_entry.pack(pady=8)
-
-Button(glass, text="Admin Login", width=20, bg="#ff69b4",
-       fg="white", font=("Arial", 12),
-       command=lambda: login("admin")).pack(pady=10)
-
-Button(glass, text="Faculty Login", width=20, bg="#ff1493",
-       fg="white", font=("Arial", 12),
-       command=lambda: login("faculty")).pack()
-
-status_label = Label(glass, text="", bg=glass_bg)
-status_label.pack(pady=10)
+# ===== LOGIN BUTTON =====
+Button(center, text="Login",
+       command=admin_login,
+       font=("Arial", 16, "bold"),
+       bg="#ff69b4",
+       fg="white",
+       width=24,
+       bd=2,
+       relief=SOLID).pack(pady=25)
 
 root.mainloop()
