@@ -4,6 +4,8 @@ conn = sqlite3.connect("timetable.db")
 cursor = conn.cursor()
 cursor.execute("SELECT * FROM instructor")
 print(cursor.fetchall())
+
+
 # Instructor table
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS instructor (
