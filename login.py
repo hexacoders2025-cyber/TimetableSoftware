@@ -7,17 +7,17 @@ from homepp import open_home_window
 root = Tk()
 root.title("AI Timetable Generator - Login")
 root.state("zoomed")
-root.configure(bg="#eef2f7")
+root.configure(bg="#c9dcf4")
 
 screen_w = root.winfo_screenwidth()
 screen_h = root.winfo_screenheight()
 
 # ================= BACKGROUND =================
-canvas = Canvas(root, bg="#eef2f7", highlightthickness=0)
+canvas = Canvas(root, bg="#c9dcf4", highlightthickness=0)
 canvas.pack(fill="both", expand=True)
 
 # ================= LEFT SIDE (LOGO + COLLEGE NAME) =================
-left_frame = Frame(root, bg="#eef2f7")
+left_frame = Frame(root, bg="#c9dcf4")
 left_frame.place(x=120, y=screen_h // 2 - 180)
 
 # ---- Logo ----
@@ -25,7 +25,7 @@ try:
     img = Image.open("bg.png")
     img = img.resize((140, 140))
     logo = ImageTk.PhotoImage(img)
-    Label(left_frame, image=logo, bg="#eef2f7").pack(pady=(0, 20))
+    Label(left_frame, image=logo, bg="#c9dcf4").pack(pady=(0, 20))
 except:
     pass
 
@@ -34,7 +34,7 @@ Label(
     left_frame,
     text="Sinhgad Academy of Engineering,\nKondhwa – Pune",
     font=("Segoe UI", 24, "bold"),
-    bg="#eef2f7",
+    bg="#c9dcf4",
     fg="#0f172a",
     justify="center"
 ).pack()
@@ -43,7 +43,7 @@ Label(
 card_width = 450
 card_height = 480
 
-x = screen_w // 2 + 180
+x = screen_w // 2 + 150
 y = screen_h // 2 - card_height // 2
 
 # Shadow
@@ -87,7 +87,7 @@ Label(
 # ================= VARIABLES =================
 selected_dept = StringVar(value="Select Department")
 
-# ================= DEPARTMENT (CLICKABLE ARROW) =================
+# ================= DEPARTMENT =================
 Label(
     center,
     text="Department",
@@ -178,11 +178,7 @@ pass_entry = Entry(
 pass_entry.pack(fill="x", padx=45, pady=(5, 30), ipady=8)
 
 # ================= LOGIN FUNCTION =================
-def admin_login():
-    username = user_entry.get().strip()
-    password = pass_entry.get().strip()
-    dept = selected_dept.get()
-    
+def admin_login(event=None):  # <-- event added for Enter key
     dept_passwords = {
         "Computer": "comp123",
         "Civil": "civil123",
@@ -219,5 +215,11 @@ Button(
     cursor="hand2",
     command=admin_login
 ).pack(ipadx=90, ipady=8)
+
+# ================= ENTER KEY BINDING =================
+root.bind("<Return>", admin_login)
+
+# Auto focus on username field
+user_entry.focus_set()
 
 root.mainloop()
