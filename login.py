@@ -7,104 +7,89 @@ from homepp import open_home_window
 root = Tk()
 root.title("AI Timetable Generator - Login")
 root.state("zoomed")
-root.configure(bg="#c9dcf4")
 
-screen_w = root.winfo_screenwidth()
-screen_h = root.winfo_screenheight()
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
 
-# ================= BACKGROUND =================
-canvas = Canvas(root, bg="#c9dcf4", highlightthickness=0)
-canvas.pack(fill="both", expand=True)
+# ================= BACKGROUND IMAGE =================
+bg_img = Image.open("loginbg.png")
+bg_img = bg_img.resize((screen_width, screen_height))
+bg_photo = ImageTk.PhotoImage(bg_img)
 
-# ================= LEFT SIDE (LOGO + COLLEGE NAME) =================
-left_frame = Frame(root, bg="#c9dcf4")
-left_frame.place(x=120, y=screen_h // 2 - 180)
+bg_label = Label(root, image=bg_photo)
+bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-# ---- Logo ----
+# ================= LOGO =================
 try:
-    img = Image.open("bg.png")
-    img = img.resize((140, 140))
+    img = Image.open("logoo.jpeg").convert("RGBA")
+    img = img.resize((140, 120), Image.LANCZOS)
     logo = ImageTk.PhotoImage(img)
-    Label(left_frame, image=logo, bg="#c9dcf4").pack(pady=(0, 20))
-except:
-    pass
 
-# ---- College Name ----
-Label(
-    left_frame,
-    text="Sinhgad Academy of Engineering,\nKondhwa – Pune",
-    font=("Segoe UI", 24, "bold"),
-    bg="#c9dcf4",
-    fg="#0f172a",
-    justify="center"
-).pack()
+    logo_label = Label(root, image=logo, bd=0, highlightthickness=0)
+    logo_label.image = logo
+    logo_label.place(x=17, y=40)
 
-# ================= ADMIN LOGIN CARD =================
-card_width = 450
+except Exception as e:
+    print("Logo error:", e)
+
+# ================= COLLEGE NAME =================
+#Label(
+#    root,
+#    text="Sinhgad Academy of Engineering,Kondhwa – Pune",
+#    font=("Segoe UI",22, "bold"),
+#    fg="white",
+#    bg="#917672",
+#    justify="center"
+#).place(relx=0.5, rely=0.22, anchor="center")
+
+# ================= LOGIN CARD =================
+card_width = 420
 card_height = 480
+card_color = "#CCA7A1"
 
-x = screen_w // 2 + 150
-y = screen_h // 2 - card_height // 2
+card_frame = Frame(root, bg=card_color, width=card_width, height=card_height)
+card_frame.place(relx=0.5, rely=0.58, anchor="center")
+card_frame.pack_propagate(False)
 
-# Shadow
-canvas.create_rectangle(
-    x + 8, y + 8,
-    x + card_width + 8, y + card_height + 8,
-    fill="#97b7dd",
-    outline="",
-    stipple="gray25"
-)
-
-# Card
-canvas.create_rectangle(
-    x, y,
-    x + card_width, y + card_height,
-    fill="#87acd1",
-    outline="#e5e7eb"
-)
-
-# ================= LOGIN FRAME =================
-center = Frame(root, bg="#f8fafc")
-center.place(x=x, y=y, width=card_width, height=card_height)
+root.attributes("-alpha", 0.97)
 
 # ================= TITLE =================
 Label(
-    center,
-    text="Admin Login",
-    font=("Segoe UI", 22, "bold"),
-    bg="#f8fafc",
-    fg="#0f172a"
+    card_frame,
+    text="Login",
+    font=("Segoe UI", 25, "bold"),
+    bg=card_color,
+    fg="white"
 ).pack(pady=(30, 10))
 
 Label(
-    center,
+    card_frame,
     text="AI Timetable Generator",
     font=("Segoe UI", 10),
-    bg="#f8fafc",
-    fg="#64748b"
+    bg=card_color,
+    fg="black"
 ).pack(pady=(0, 25))
 
-# ================= VARIABLES =================
 selected_dept = StringVar(value="Select Department")
 
 # ================= DEPARTMENT =================
 Label(
-    center,
+    card_frame,
     text="Department",
     font=("Segoe UI", 11, "bold"),
-    bg="#f8fafc",
-    fg="#334155"
+    bg=card_color,
+    fg="white"
 ).pack(anchor="w", padx=45)
 
-dept_frame = Frame(center, bg="#e2e8f0")
+dept_frame = Frame(card_frame, bg="#78635F")
 dept_frame.pack(fill="x", padx=45, pady=(5, 15), ipady=6)
 
 dept_btn = Menubutton(
     dept_frame,
     textvariable=selected_dept,
     font=("Segoe UI", 12),
-    bg="#e2e8f0",
-    fg="#0f172a",
+    bg="#78635F",
+    fg="white",
     bd=0,
     relief=FLAT,
     anchor="w",
@@ -134,8 +119,8 @@ arrow_lbl = Label(
     dept_frame,
     text="▼",
     font=("Segoe UI", 10, "bold"),
-    bg="#e2e8f0",
-    fg="#334155",
+    bg="#78635F",
+    fg="white",
     padx=12,
     cursor="hand2"
 )
@@ -144,41 +129,45 @@ arrow_lbl.bind("<Button-1>", open_dept_menu)
 
 # ================= USERNAME =================
 Label(
-    center,
+    card_frame,
     text="Username",
     font=("Segoe UI", 11, "bold"),
-    bg="#f8fafc",
-    fg="#334155"
+    bg=card_color,
+    fg="white"
 ).pack(anchor="w", padx=45)
 
 user_entry = Entry(
-    center,
+    card_frame,
     font=("Segoe UI", 12),
-    bg="#e2e8f0",
+    bg="#78635F",
+    fg="white",
+    insertbackground="white",
     bd=0
 )
 user_entry.pack(fill="x", padx=45, pady=(5, 15), ipady=8)
 
 # ================= PASSWORD =================
 Label(
-    center,
+    card_frame,
     text="Password",
     font=("Segoe UI", 11, "bold"),
-    bg="#f8fafc",
-    fg="#334155"
+    bg=card_color,
+    fg="white"
 ).pack(anchor="w", padx=45)
 
 pass_entry = Entry(
-    center,
+    card_frame,
     font=("Segoe UI", 12),
-    bg="#e2e8f0",
+    bg="#78635F",
+    fg="white",
+    insertbackground="white",
     bd=0,
     show="*"
 )
 pass_entry.pack(fill="x", padx=45, pady=(5, 30), ipady=8)
 
 # ================= LOGIN FUNCTION =================
-def admin_login(event=None):  # <-- event added for Enter key
+def admin_login(event=None):
     dept_passwords = {
         "Computer": "comp123",
         "Civil": "civil123",
@@ -203,23 +192,29 @@ def admin_login(event=None):  # <-- event added for Enter key
     else:
         messagebox.showerror("Login Failed", "Invalid credentials")
 
+# ================= ENTER KEY FEATURES =================
+# Press Enter in Username → go to Password
+def go_to_password(event):
+    pass_entry.focus_set()
+
+user_entry.bind("<Return>", go_to_password)
+
+# Press Enter in Password → Login
+pass_entry.bind("<Return>", admin_login)
+
 # ================= LOGIN BUTTON =================
 Button(
-    center,
+    card_frame,
     text="Login",
     font=("Segoe UI", 13, "bold"),
-    bg="#2563eb",
+    bg="#433735",
     fg="white",
-    activebackground="#1d4ed8",
+    activebackground="#433735",
     bd=0,
     cursor="hand2",
     command=admin_login
 ).pack(ipadx=90, ipady=8)
 
-# ================= ENTER KEY BINDING =================
-root.bind("<Return>", admin_login)
-
-# Auto focus on username field
 user_entry.focus_set()
 
 root.mainloop()
