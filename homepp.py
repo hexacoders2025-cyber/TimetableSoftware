@@ -150,8 +150,8 @@ def open_home_window():
         return btn
 
     # Sidebar options
-    btn_instructor = sidebar_btn("👨‍🏫  Instructors")
-    btn_instructor.config(command=lambda: instructor_page.lift())
+    btn_teachers = sidebar_btn("👨‍🏫  Teachers")
+    btn_teachers.config(command=lambda: teachers_page.lift())
 
     btn_rooms = sidebar_btn("🏫  Rooms")
     btn_rooms.config(command=lambda: open_modal("Room Details"))
@@ -295,150 +295,150 @@ def open_home_window():
     teacher_page = Frame(content, bg="white")
     student_page = Frame(content, bg="white")
 
-    instructor_page = Frame(content, bg="white")   # 👈 ADD THIS LINE
+    teachers_page = Frame(content, bg="white")   # 👈 ADD THIS LINE
 
-    for page in (home_page, teacher_page, student_page, instructor_page):  # 👈 ADD HERE
+    for page in (home_page, teacher_page, student_page, teachers_page):  # 👈 ADD HERE
         page.place(relwidth=1, relheight=1)
 
     home_page.lift()   # default page
     
-    def open_instructor_year(year):
-        instructor_page.lift()
-        print("Instructor Year Selected:", year)
+    def open_teachers_year(year):
+        teachers_page.lift()
+        print("Teachers Year Selected:", year)
         
-    # ================= INSTRUCTOR PAGE CONTENT =================
+    # ================= TEACHERS PAGE CONTENT =================
 
     def create_staff_table(parent, title):
 
         frame = Frame(parent, bg="white")
-        frame.pack(pady=20, fill=X)
+        frame.pack(pady=25)
+
+        header_frame = Frame(frame, bg="white")
+        header_frame.pack(fill=X)
 
         Label(
-            frame,
+            header_frame,
             text=title,
             font=("Arial", 18, "bold"),
             bg="white"
-        ).pack(anchor="w", padx=20)
+        ).pack(pady=5)
 
-        # Add Button
-        def add_row():
-            tree.insert("", END, values=("New Teacher", "New Subject", "Edit"))
 
-        Button(
-            frame,
-            text="Add",
-            bg="#2563eb",
-            fg="white",
-            width=10,
-            command=add_row
-        ).pack(anchor="e", padx=20, pady=5)
-
+        # ----- TABLE -----
         columns = ("Teacher Name", "Subject", "Action")
 
         tree = ttk.Treeview(
             frame,
             columns=columns,
             show="headings",
-            height=10
+            height=8
         )
 
         for col in columns:
             tree.heading(col, text=col)
-            tree.column(col, width=180, anchor=CENTER)
+            tree.column(col, width=200, anchor=CENTER)
 
-        tree.pack(padx=20)
+        tree.pack(padx=10, anchor="center")
 
-        # Insert 10 empty rows
-        for _ in range(10):
+        # Insert default rows
+        for _ in range(5):
             tree.insert("", END, values=("Teacher", "Subject", "Edit"))
 
-        # -------- EDIT FUNCTIONALITY --------
+        # Track editing state
+        editing = {"item": None, "entries": None}
 
-        # def on_double_click(event):
-        #     item = tree.focus()
-        #     if not item:
-        #         return
+        # ---------- START EDIT ----------
+        def start_edit(item):
 
-        #     values = tree.item(item, "values")
+            if editing["item"] is not None:
+                save_edit()
 
-        #     if values[2] == "Edit":
-        #         tree.item(item, values=(values[0], values[1], "Save"))
+            values = tree.item(item, "values")
+            tree.item(item, values=(values[0], values[1], "Save"))
 
-        #         x1, y1, w1, h1 = tree.bbox(item, "#1")
-        #         entry1 = Entry(tree)
-        #         entry1.insert(0, values[0])
-        #         entry1.place(x=x1, y=y1, width=w1, height=h1)
+            x1, y1, w1, h1 = tree.bbox(item, "#1")
+            entry1 = Entry(tree)
+            entry1.insert(0, values[0])
+            entry1.place(x=x1, y=y1, width=w1, height=h1)
 
-        #         x2, y2, w2, h2 = tree.bbox(item, "#2")
-        #         entry2 = Entry(tree)
-        #         entry2.insert(0, values[1])
-        #         entry2.place(x=x2, y=y2, width=w2, height=h2)
+            x2, y2, w2, h2 = tree.bbox(item, "#2")
+            entry2 = Entry(tree)
+            entry2.insert(0, values[1])
+            entry2.place(x=x2, y=y2, width=w2, height=h2)
 
-        #         def save():
-        #             tree.item(item, values=(
-        #                 entry1.get(),
-        #                 entry2.get(),
-        #                 "Edit"
-        #             ))
-        #             entry1.destroy()
-        #             entry2.destroy()
+            editing["item"] = item
+            editing["entries"] = (entry1, entry2)
 
-        #         entry1.bind("<Return>", lambda e: save())
-        #         entry2.bind("<Return>", lambda e: save())
+            entry1.focus()
 
-        # tree.bind("<Double-1>", on_double_click)
-        
-            def on_click(event):
-                item = tree.identify_row(event.y)
-                column = tree.identify_column(event.x)
+        # ---------- SAVE EDIT ----------
+        def save_edit():
 
-                if not item or column != "#3":
-                    return
+            if editing["item"] is None:
+                return
 
-                values = tree.item(item, "values")
+            item = editing["item"]
+            entry1, entry2 = editing["entries"]
 
-                # If currently Edit → switch to Save mode
-                if values[2] == "Edit":
-                    tree.item(item, values=(values[0], values[1], "Save"))
+            new_name = entry1.get()
+            new_subject = entry2.get()
 
-                    x1, y1, w1, h1 = tree.bbox(item, "#1")
-                    entry1 = Entry(tree)
-                    entry1.insert(0, values[0])
-                    entry1.place(x=x1, y=y1, width=w1, height=h1)
+            tree.item(item, values=(new_name, new_subject, "Edit"))
 
-                    x2, y2, w2, h2 = tree.bbox(item, "#2")
-                    entry2 = Entry(tree)
-                    entry2.insert(0, values[1])
-                    entry2.place(x=x2, y=y2, width=w2, height=h2)
+            entry1.destroy()
+            entry2.destroy()
 
-                    # Store entries inside tree object
-                    tree.edit_entries = (entry1, entry2)
+            editing["item"] = None
+            editing["entries"] = None
 
-                # If currently Save → save data
-                elif values[2] == "Save":
-                    entry1, entry2 = tree.edit_entries
+        # ---------- ADD ROW ----------
+        def add_row():
 
-                    new_name = entry1.get()
-                    new_subject = entry2.get()
+            if editing["item"] is not None:
+                save_edit()
 
-                    tree.item(item, values=(new_name, new_subject, "Edit"))
+            item = tree.insert("", END, values=("", "", "Edit"))
+            tree.update_idletasks()
+            start_edit(item)
 
-                    entry1.destroy()
-                    entry2.destroy()
+        Button(
+            header_frame,
+            text="Add",
+            bg="#2563eb",
+            fg="white",
+            width=10,
+            command=add_row
+        ).pack(side=RIGHT, padx=10)
 
-                    tree.edit_entries = None
+        # ---------- CLICK HANDLER ----------
+        def on_click(event):
 
-            tree.bind("<Button-1>", on_click)
+            item = tree.identify_row(event.y)
+            column = tree.identify_column(event.x)
+
+            if not item or column != "#3":
+                return
+
+            values = tree.item(item, "values")
+
+            if values[2] == "Edit":
+                start_edit(item)
+            elif values[2] == "Save":
+                save_edit()
+
+        tree.bind("<Button-1>", on_click)
+
+
 
 
 
    # Clear previous content
-    for widget in instructor_page.winfo_children():
+    for widget in teachers_page.winfo_children():
         widget.destroy()
 
     # ---------- SCROLLABLE AREA ----------
-    canvas = Canvas(instructor_page, bg="white")
-    scrollbar = Scrollbar(instructor_page, orient=VERTICAL, command=canvas.yview)
+    canvas = Canvas(teachers_page, bg="white")
+    scrollbar = Scrollbar(teachers_page, orient=VERTICAL, command=canvas.yview)
 
     canvas.configure(yscrollcommand=scrollbar.set)
 
@@ -471,7 +471,7 @@ def open_home_window():
     # ---------- CONTENT ----------
     Label(
         scrollable_frame,
-        text="Instructor Management",
+        text="Teacher Management",
         font=("Arial", 28, "bold"),
         bg="white"
     ).pack(pady=20)
